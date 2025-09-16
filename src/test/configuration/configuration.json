@@ -1,0 +1,80 @@
+{
+  "application": "timetimeoff-management",
+  "application port": "3001",
+  "server IP": "140.124.183.81",
+  "sleep time": "30",
+  "agents": [
+    {
+      "ip": "140.124.181.234",
+      "javaPort": "3400",
+      "pythonPort": "13400"
+    }
+  ],
+  "crawler config": {
+    "crawler": "crawljax",
+    "depth": "4",
+    "root url": "http://localhost:3000/"
+  },
+
+  "for testing": {
+    "test01": {
+      "test01-1": "hello 01-1",
+      "test01-2": "hello 01-2"
+    },
+    "test02": {
+      "test02-1": "hello 01-1",
+      "test02-2": "hello 02-2",
+      "test02-3": "hello 02-3",
+      "test02-4": "hello 02-4"
+    },
+    "test03": {
+      "test03-1": {
+        "test03-1-1": {
+          "test03-1-1-1": "hello 03-1-1-1",
+          "test03-1-1-2": "hello 03-1-1-2"
+        }
+      },
+      "test03-2": "hello 03-2"
+    },
+    "test array": {
+      "test array-1": {
+        "test array-2": [
+          {
+            "array1": "I am first array1",
+            "array2": "I am first array2",
+            "array3": "I am first array3"
+          },
+          {
+            "array1": "I am second array1",
+            "array2": "I am second array2",
+            "array3": "I am second array3"
+          }
+        ]
+      }
+    },
+    "test agent": [
+      {
+        "name": "Tony",
+        "level": "26",
+        "play hours": "23hr"
+      },
+      {
+        "name": "Gilbert",
+        "level": "26",
+        "play hours": "33hr"
+      },
+      {
+        "name": "Andrew",
+        "level": "10",
+        "play hours": "??hr"
+      }
+    ],
+    "branch": {
+      "1": [1, 1],
+      "2": [14, 14],
+      "3": [13, 0],
+      "4": [3, 10],
+      "5": [1, 12]
+    }
+  }
+}

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8">
+
+  <title>Tree Example</title>
+
+  <style>	
+	.node {
+		cursor: pointer;
+	}
+
+	.node circle {
+	  fill: #fff;
+	  stroke: steelblue;
+	  stroke-width: 3px;
+	}
+
+	.node text {
+	  font: 12px sans-serif;
+	}
+
+	.link {
+	  fill: none;
+	  stroke: #ccc;
+	  stroke-width: 2px;
+	}	
+  </style>
+
+  <!-- load the d3.js library -->	
+  <script src="./js/d3.min.js"></script>
+  <script src="./js/directiveTree.graph.js"></script>
+
+  <script src="./js/jquery-3.5.1.slim.min.js"></script>
+  <link rel="stylesheet" href="./css/bootstrap.min.css">
+  <script src="./js/bootstrap.bundle.min.js"></script>
+
+  <script src="./data.js"></script>
+
+</head>
+
+<body>
+
+<script>
+  var treeData = [data];
+
+  // ************** Generate the tree diagram	 *****************
+  var margin = {top: 20, right: 120, bottom: 20, left: 120},
+    width = getDirectiveTreeDepth(treeData[0]) * (2000+20) - margin.right - margin.left,
+    height = getDirectiveTreeBreadth(treeData[0]) * 240 - margin.top - margin.bottom;
+
+
+  var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.right + margin.left)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var tree = d3.layout.tree()
+    .size([height, width]);
+
+  var i = 0,
+    duration = 750,
+    root;
+
+  var diagonal = d3.svg.diagonal();
+
+  root = treeData[0];
+  root.x0 = height / 2;
+  root.y0 = 0;
+  diagonal.projection(function(d){return [d.y, d.x]})
+  update(root);
+  d3.select(self.frameElement).style("height", "500px");
+
+</script>
+  
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-borderless">
+          <p id="formXPath">Popover in a modal</p>
+          <p id="coverageImproved">Popover in a modal</p>
+          <p id="learningTargetActionSequenceLength">Popover in a modal</p>
+          <thead>
+            <tr>
+              <th scope="col">xpath</th>
+              <th scope="col">value</th>
+            </tr>
+          </thead>
+          <tbody id="actionSequenceTable">
+            
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showModal(d) {
+    if (d.Type == "Directive"){
+      var directive_tree_class_id = d.id
+      var directive_tree_id = directive_tree_class_id.substr(directive_tree_class_id.indexOf("@") + 1)
+      var title = "Directive ID: " + directive_tree_id;
+      var formXPath = "Form XPath: " + d.formXPath;
+      var coverageImproved = "Code coverage Improved: " + d.coverageImproved;
+      var learningTargetActionSequenceLength = "Learning Target Action Sequnce Size is :" + d.learningTargetActionSequenceLength;
+      $('#exampleModalLabel').html(title);
+      $('#formXPath').html(formXPath);
+      $('#coverageImproved').html(coverageImproved);
+      $('#learningTargetActionSequenceLength').html(learningTargetActionSequenceLength);
+      actionSequenceFormate(d.ActionSequence)
+      $('#exampleModal').modal('show')
+    }
+  }
+
+  function actionSequenceFormate(highLevelActionSequence){
+    $('#actionSequenceTable').empty()
+    highLevelActionSequence.forEach(ationSequence => {
+      ationSequence.forEach(action =>{
+        if (action!=null){
+          addNewRow(action,"table-active")
+        }
+      })
+      addNewRow({"xpath":"", "value":""}, "Default")
+    });
+  }
+
+  function addNewRow(action,color){
+    var newRow =  document.createElement("tr")
+    var xpath = document.createElement("td")
+    var value = document.createElement("td")
+
+    xpath.innerHTML = action.xpath;
+    value.innerHTML = action.value;
+    
+    newRow.setAttribute("class",color)
+    newRow.append(xpath, value)
+    
+    $('#actionSequenceTable').append(newRow)
+  }
+
+</script>
+
+</body>
+</html>

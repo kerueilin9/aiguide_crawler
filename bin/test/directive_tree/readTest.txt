@@ -1,0 +1,2 @@
+test read file
+test write file %1

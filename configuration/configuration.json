@@ -1,0 +1,18 @@
+{
+  "application": "timeoff_management_with_coverage",
+  "application port": "3001",
+  "server IP": "127.0.0.1",
+  "sleep time": "30",
+  "agents": [
+    {
+      "ip": "127.0.0.1",
+      "java port": "2700",
+      "python port": "2701"
+    }
+  ],
+  "crawler config": {
+    "crawler": "crawljax",
+    "depth": "5",
+    "root url": "http://localhost:3001/"
+  }
+}

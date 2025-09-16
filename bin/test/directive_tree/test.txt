@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <title>Tree Example</title>
+
+    <style>
+	
+	.node {
+		cursor: pointer;
+	}
+
+	.node circle {
+	  fill: #fff;
+	  stroke: steelblue;
+	  stroke-width: 3px;
+	}
+
+	.node text {
+	  font: 12px sans-serif;
+	}
+
+	.link {
+	  fill: none;
+	  stroke: #ccc;
+	  stroke-width: 2px;
+	}
+	
+    </style>
+
+  </head>
+
+  <body>
+
+<!-- load the d3.js library -->	
+<script src="./d3.min.js"></script>
+	
+<script>
+var treeData = [{}];
+
+// ************** Generate the tree diagram	 *****************
+var treeDirection = "horizontal";
+
+var margin = {top: 20, right: 120, bottom: 20, left: 120},
+  width = getDirectiveTreeDepth(treeData[0]) * (180+20) - margin.right - margin.left,
+	height = getDirectiveTreeBreadth(treeData[0]) * 100 - margin.top - margin.bottom;
+
+
+var svg = d3.select("body").append("svg")
+	.attr("width", width + margin.right + margin.left)
+	.attr("height", height + margin.top + margin.bottom)
+  .append("g")
+	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var tree = d3.layout.tree()
+  .size([height, width]);
+
+var i = 0,
+  duration = 750,
+  root;
+
+var diagonal = d3.svg.diagonal();
+
+root = treeData[0];
+root.x0 = height / 2;
+root.y0 = 0;
+
+if (treeDirection == "horizontal"){
+  root.x0 = height / 2;
+  root.y0 = 0;
+  diagonal.projection(function(d){return [d.y, d.x]})
+}
+else if (treeDirection == "vertical"){
+  root.x0 = 0;
+  root.y0 = height / 2;
+  diagonal.projection(function(d){return [d.x, d.y]})
+};
+  
+update(root);
+
+d3.select(self.frameElement).style("height", "500px");
+
+function update(source) {
+  // Compute the new tree layout.
+  var nodes = tree.nodes(root).reverse(),
+	    links = tree.links(nodes);
+  var  treeDirection = "horizontal";
+  // Normalize for fixed-depth.
+  nodes.forEach(function(d) { d.y = d.depth * 180; });
+
+  // Update the nodes??
+  var node = svg.selectAll("g.node")
+	  .data(nodes, function(d) { return d.id || (d.id = ++i); });
+
+  // Enter any new nodes at the parent's previous position.
+  var nodeEnter = node.enter().append("g")
+	  .attr("class", "node")
+	  .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+	  .on("click", click);
+
+  setNodeContent(nodeEnter);
+  
+  // Transition nodes to their new position.
+  var nodeUpdate = node.transition()
+	  .duration(duration)
+	  .attr("transform", function(d) { 
+      var translate = "translate(" + d.y + "," + d.x + ")"; 
+      if (treeDirection == "vertical") translate = "translate(" + d.x + "," + d.y + ")"; 
+      return translate;
+      });
+
+  setNodeNewForm(nodeUpdate)
+
+
+  // Transition exiting nodes to the parent's new position.
+  var nodeExit = node.exit().transition()
+	  .duration(duration)
+	  .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+	  .remove();
+    
+  setNodeExistForm(nodeExit)
+
+  // Update the links??
+  var link = svg.selectAll("path.link")
+	  .data(links, function(d) { return d.target.id; });
+
+  // Enter any new links at the parent's previous position.
+  link.enter().insert("path", "g")
+	  .attr("class", "link")
+	  .attr("d", function(d) {
+		var o = {x: source.x0, y: source.y0};
+		return diagonal({source: o, target: o});
+	  });
+
+  // Transition links to their new position.
+  link.transition()
+	  .duration(duration)
+	  .attr("d", diagonal);
+
+  // Transition exiting nodes to the parent's new position.
+  link.exit().transition()
+	  .duration(duration)
+	  .attr("d", function(d) {
+		var o = {x: source.x, y: source.y};
+		return diagonal({source: o, target: o});
+	  })
+	  .remove();
+
+  // Stash the old positions for transition.
+  nodes.forEach(function(d) {
+	d.x0 = d.x;
+	d.y0 = d.y;
+  });
+}
+
+// graph setting
+function getDirectiveTreeDepth(tree){
+  var depth = 0;
+  var childNode = tree.children;
+  if (childNode.length == 0) depth = 1;
+  else{
+    var max = -1;
+    for(var i = 0; i < childNode.length; i++){
+      max = Math.max(max, getDirectiveTreeDepth(childNode[i]));
+    }
+    depth += max + 1;
+  }
+  return depth
+}
+
+function getDirectiveTreeBreadth(tree){
+  var depth = 0;
+  var childNode = tree.children;
+  if (childNode.length == 0) depth = 1;
+  else{
+    for(var i = 0; i < childNode.length; i++){
+      depth += getDirectiveTreeBreadth(childNode[i]);
+    }
+  }
+  return depth
+}
+
+
+// set Note content 
+function setNodeContent(nodeEnter){
+  var circleRadius = 10;
+  nodeEnter.append("circle")
+	  .attr("r", circleRadius)
+    .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+  
+  console.log(nodeEnter);
+
+  var textSize = 12;
+  nodeEnter.append("text")
+	  .attr("x", function(d) { return d.children || d._children ? -20 : 20; })
+	  .attr("dy", function(d) { 
+      if (d.children || d._children){
+        return circleRadius*2 + 6
+      }else{
+        return d.Type=="Directive" ? (circleRadius*2 - textSize) / 2 : ( circleRadius*2 - (textSize * 2 + 6))/2
+      }
+    })
+	  .attr("text-anchor", "start")
+	  .text(function(d) { 
+      if (d.Type == "Directive") return d.id;
+      if (d.Type == "InputPage") return "InputPage ID: " + d.stateID
+     })
+	  .style("fill-opacity", 1e-6)
+    .append("tspan")
+    .attr("x", function(d) { return d.children || d._children ? -20 : 20; })
+    .attr("dy", function(d) { return d.Type=="InputPage" ? textSize + 6 : 0})
+    .text(
+      function(d) { 
+        if (d.Type == "InputPage") {
+        var urlWithoutHttp = d.targetURL.substr("https://".length)
+        return "InputPage URL: " + urlWithoutHttp.substr(urlWithoutHttp.indexOf("/"))
+      }
+     }
+    );
+}
+
+function setNodeNewForm(nodeUpdate){
+  nodeUpdate.select("circle")
+	  .attr("r", 10)
+	  .style("fill", function(d) { 
+      var color = "black";
+      if (d.Type == "Directive"){
+        color = "red"
+      }
+      if(d.Type == "InputPage"){
+        color = "#FFF"
+      }
+      return color
+     });
+
+  nodeUpdate.select("text")
+	  .style("fill-opacity", 1);
+}
+
+function setNodeExistForm(nodeExit){
+  nodeExit.select("circle")
+	  .attr("r", 1e-6);
+
+  nodeExit.select("text")
+	  .style("fill-opacity", 1e-6);
+}
+
+
+// Toggle children on click.
+function click(d) {
+  if (d.children) {
+    d._children = d.children;
+    d.children = null;
+  } else {
+    d.children = d._children;
+    d._children = null;
+  }
+  update(d);
+}
+
+</script>
+	
+  </body>
+</html>

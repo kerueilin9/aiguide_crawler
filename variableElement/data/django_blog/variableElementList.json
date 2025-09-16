@@ -1,0 +1,16 @@
+{
+  "variableList": [
+    {
+      "state": "index",
+      "url": "http://localhost:%d/login",
+      "element": "/HTML/BODY/DIV[1]/DIV/DIV/DIV/FORM/INPUT[1]",
+      "attribute": "value"
+    },
+    {
+      "state": "index",
+      "url": "http://localhost:%d/login/",
+      "element": "/HTML/BODY/DIV[1]/DIV/DIV/DIV/FORM/INPUT[1]",
+      "attribute": "value"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "application": "timetimeoff-management",
+  "application port": "8787",
+  "server IP": "140.124.181.236",
+  "sleep time": "30",
+  "agents": [
+    {
+      "ip": "140.124.183.85",
+      "javaPort": "6666",
+      "pythonPort": "6667"
+    },
+    {
+      "ip": "140.124.183.89",
+      "javaPort": "7777",
+      "pythonPort": "7778"
+    }
+  ],
+  "crawler config": {
+    "crawler": "crawljax",
+    "depth": "5",
+    "root url": "http://localhost:8787/login"
+  }
+}

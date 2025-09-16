@@ -1,0 +1,13 @@
+.idea/
+.gradle/
+out/
+build/
+log/
+crawler-record/
+output_folder_IS_UNDEFINED/
+directiveTreeGraphic/*
+
+*.zip
+*.yml
+*.log
+*.csv
